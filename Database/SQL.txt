@@ -1,0 +1,61 @@
+/*
+	This file is series of MySQL code to create and initialize the 
+	tables needed in this project. All tables are intialized and 
+	the primary and foreign keys are all set up.
+*/
+
+/*
+	Player:
+	-------
+	
+	@ SteamID is a string of at most 18 characters. It's format goes along the following: 
+		- STEAM_0:0:12345678
+		- STEAM_0:1:87654321
+	@ FirstName is a normal string where the player inputs his first name.
+	@ LastName is a normal string where the player inputs his last name.
+	@ Password is a string of the hashed password of the player (it is not stored as plain text).
+	
+	@ PRIMARY KEY of this table is the SteamID which is always unique
+*/
+CREATE TABLE Player (
+	SteamID 	varchar( 18 ) 	NOT NULL,
+	FirstName 	varchar( 255 ),
+	LastName	varchar( 255 ),
+	Password	varchar( 255 ),
+	PRIMARY KEY ( SteamID )
+)
+
+/*
+	Achievement:
+	------------
+	
+	@ ID is an integer that indentifies the achievement
+	@ Name is a string that gives a name to the achievement
+	@ Description is a string that explains a little bit about the achievement
+	@ Goal is the goal that the player has to reach to get the achievement
+*/
+CREATE TABLE Achievement (
+	ID		int 		NOT NULL AUTO_INCREMENT,
+	Name		varchar( 255 ),
+	Description	varchar( 512 ),
+	Goal		int,
+	PRIMARY KEY ( ID )
+)
+
+/*
+	Achieves:
+	---------
+	
+	@ SteamID is the foreign key from Player
+	@ ID is the foreign key from Achievement
+	@ Progress is an integer number stating the progress of each Player with each Achievement
+	@ Acquired is a boolean variable that stores whether the player achieved each Achievement
+*/
+CREATE TABLE Achieves (
+	SteamID		varchar( 18 ),
+	ID		int,
+	Progress	int,
+	Acquired	boolean,
+	FOREIGN KEY ( SteamID ) 	REFERENCES Player ( SteamID ),
+	FOREIGN KEY ( ID ) 		REFERENCES Achievement ( ID )
+)
