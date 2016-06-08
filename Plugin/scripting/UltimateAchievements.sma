@@ -171,7 +171,7 @@ public client_authorized( iPlayerID ) {
 	MySQL_PlayerConnected( iPlayerID );
 }
 
-public client_disconnect( iPlayerID ) {
+public client_disconnected( iPlayerID ) {
 	MySQL_SavePlayerStats( iPlayerID );
 }
 
@@ -216,7 +216,7 @@ public ClCmd_LastName( iPlayerID ) {
 
 public ClCmd_RegisterMenu( iPlayerID ) {
 	if( CheckBit( g_bitIsRegistered, iPlayerID ) ) {
-		client_print( iPlayerID, print_chat, "[ UA ] You are already registered. You cannot register twice." );
+		client_print( iPlayerID, print_chat, "[ Achievements ] You are already registered. You cannot register twice." );
 	} else {
 		ShowPlayerRegistrationMenu( iPlayerID );
 	}
@@ -224,12 +224,12 @@ public ClCmd_RegisterMenu( iPlayerID ) {
 
 public ClCmd_LoginMenu( iPlayerID ) {
 	if( CheckBit( g_bitIsLoggedIn, iPlayerID ) ) {
-		client_print( iPlayerID, print_chat, "[ UA ] You are already logged in. You cannot log in twice." );
+		client_print( iPlayerID, print_chat, "[ Achievements ] You are already logged in. You cannot log in twice." );
 	} else {
 		if( CheckBit( g_bitIsRegistered, iPlayerID ) ) {
 			ShowPlayerLogInMenu( iPlayerID );
 		} else {
-			client_print( iPlayerID, print_chat, "[ UA ] You have to be registered first to login. Please type /register to do so." );
+			client_print( iPlayerID, print_chat, "[ Achievements ] You have to be registered first to login. Please type /register to do so." );
 		}
 	}
 }
@@ -238,12 +238,12 @@ public ClCmd_LogoutMenu( iPlayerID ) {
 	if( CheckBit( g_bitIsLoggedIn, iPlayerID ) ) {
 		ClearBit( g_bitIsLoggedIn, iPlayerID );
 		
-		client_print( iPlayerID, print_chat, "[ UA ] You are now logged out. Your progress will not be saved." );
-		client_print( iPlayerID, print_chat, "[ UA ] If you want your progress to be saved, please log back in." );
+		client_print( iPlayerID, print_chat, "[ Achievements ] You are now logged out. Your progress will not be saved." );
+		client_print( iPlayerID, print_chat, "[ Achievements ] If you want your progress to be saved, please log back in." );
 		
 		MySQL_SavePlayerStats( iPlayerID );
 	} else {
-		client_print( iPlayerID, print_chat, "[ UA ] You are not even logged in. You have to login first in order to logout." );
+		client_print( iPlayerID, print_chat, "[ Achievements ] You are not even logged in. You have to login first in order to logout." );
 	}
 }
 
@@ -254,9 +254,9 @@ public Ham_Spawn_Player_Post( iPlayerID ) {
 	}
 	
 	if( CheckBit( g_bitIsRegistered, iPlayerID ) ) {
-		client_print( iPlayerID, print_chat, "[ UA ] Please type /login to login." );
+		client_print( iPlayerID, print_chat, "[ Achievements ] Please type /login to login." );
 	} else {
-		client_print( iPlayerID, print_chat, "[ UA ] Please type /register to register." );
+		client_print( iPlayerID, print_chat, "[ Achievements ] Please type /register to register." );
 	}
 	
 	return HAM_IGNORED;
@@ -284,7 +284,7 @@ public MySQL_InitializeConnection( ) {
 
 MySQL_GetAchievementGoals( ) {
 	new strQuery[ 512 ];
-	formatex( strQuery, charsmax( strQuery ), "SELECT * FROM Achievement;"
+	formatex( strQuery, charsmax( strQuery ), "SELECT * FROM Achievement;" );
 	
 	SQL_ThreadQuery( g_sqlTuple, "MySQL_Answer_GetAchievementGoals", strQuery );
 }
@@ -371,17 +371,17 @@ public MySQL_Answer_RegisterPlayer( iFailState, Handle:hQuery, strErrorMessage[ 
 		log_amx( "Could not connect to the MySQL Database." );
 		log_amx( "[%d] %s", iErrorCode, strErrorMessage );
 		
-		client_print( iPlayerID, print_chat, "[ UA ] There has been a problem registering your password. Please try again" );
+		client_print( iPlayerID, print_chat, "[ Achievements ] There has been a problem registering your password. Please try again" );
 	} else if( iFailState == TQUERY_QUERY_FAILED ) {
 		log_amx( "Query failed" );
 		log_amx( "[%d] %s", iErrorCode, strErrorMessage );
 		
-		client_print( iPlayerID, print_chat, "[ UA ] There has been a problem registering your password. Please try again" );
+		client_print( iPlayerID, print_chat, "[ Achievements ] There has been a problem registering your password. Please try again" );
 	} else {
 		SetBit( g_bitIsRegistered, iPlayerID );
 		
-		client_print( iPlayerID, print_chat, "[ UA ] You have been successfully registered." );
-		client_print( iPlayerID, print_chat, "[ UA ] Please type /login to login." );
+		client_print( iPlayerID, print_chat, "[ Achievements ] You have been successfully registered." );
+		client_print( iPlayerID, print_chat, "[ Achievements ] Please type /login to login." );
 	}
 	
 	SQL_FreeHandle( hQuery );
@@ -407,12 +407,12 @@ public MySQL_Answer_GetPlayerInfo( iFailState, Handle:hQuery, strErrorMessage[ ]
 		log_amx( "Could not connect to the MySQL Database." );
 		log_amx( "[%d] %s", iErrorCode, strErrorMessage );
 		
-		client_print( iPlayerID, print_chat, "[ UA ] There has been a problem connecting to the database. Please try again." );
+		client_print( iPlayerID, print_chat, "[ Achievements ] There has been a problem connecting to the database. Please try again." );
 	} else if( iFailState == TQUERY_QUERY_FAILED ) {
 		log_amx( "Query Failed" );
 		log_amx( "[%d] %s", iErrorCode, strErrorMessage );
 		
-		client_print( iPlayerID, print_chat, "[ UA ] It seems that you are not registered. Please register first." );
+		client_print( iPlayerID, print_chat, "[ Achievements ] It seems that you are not registered. Please register first." );
 	}
 	
 	new strPlayerHashedPassword[ 34 ];
@@ -445,12 +445,12 @@ public MySQL_Answer_GetPlayerStats( iFailState, Handle:hQuery, strErrorMessage[ 
 		log_amx( "Could not connect to the MySQL Database." );
 		log_amx( "[%d] %s", iErrorCode, strErrorMessage );
 		
-		client_print( iPlayerID, print_chat, "[ UA ] There has been a problem connecting to the database. Please try again." );
+		client_print( iPlayerID, print_chat, "[ Achievements ] There has been a problem connecting to the database. Please try again." );
 	} else if( iFailState == TQUERY_QUERY_FAILED ) {
 		log_amx( "Query Failed" );
 		log_amx( "[%d] %s", iErrorCode, strErrorMessage );
 		
-		client_print( iPlayerID, print_chat, "[ UA ] There has been a problem retrieving your stats. Please try again." );
+		client_print( iPlayerID, print_chat, "[ Achievements ] There has been a problem retrieving your stats. Please try again." );
 	} else {
 		if( !SQL_NumResults( hQuery ) ) {
 			MySQL_InsertPlayerAchieves( iPlayerID );
@@ -492,14 +492,14 @@ public MySQL_Answer_InsertPlayerStats( iFailState, Handle:hQuery, strErrorMessag
 		log_amx( "Could not connect to the MySQL Database." );
 		log_amx( "[%d] %s", iErrorCode, strErrorMessage );
 		
-		client_print( iPlayerID, print_chat, "[ UA ] There has been a problem connecting to the database. Please try again." );
+		client_print( iPlayerID, print_chat, "[ Achievements ] There has been a problem connecting to the database. Please try again." );
 	} else if( iFailState == TQUERY_QUERY_FAILED ) {
 		log_amx( "Query Failed" );
 		log_amx( "[%d] %s", iErrorCode, strErrorMessage );
 		
-		client_print( iPlayerID, print_chat, "[ UA ] There has been a problem inserting your stats. Please try again." );
+		client_print( iPlayerID, print_chat, "[ Achievements ] There has been a problem inserting your stats. Please try again." );
 	} else {
-		client_print( iPlayerID, print_chat, "[ UA ] Your stats has been inserted into our database. Start playing to increase your stats." );
+		client_print( iPlayerID, print_chat, "[ Achievements ] Your stats has been inserted into our database. Start playing to increase your stats." );
 	}
 	
 	SQL_FreeHandle( hQuery );
@@ -513,21 +513,19 @@ MySQL_SavePlayerStats( iPlayerID ) {
 	get_user_authid( iPlayerID, strPlayerAuthID, charsmax( strPlayerAuthID ) );
 	
 	new strQuery[ 4096 ] = "";
-	new iID, iProgress, bool:bAcquired;
+	new iProgress;
 	
 	
 	for( new iLoop = 1; iLoop < ACHIEVEMENT_MAX; iLoop++ ) {
 		iProgress = g_iPlayerAchievementProgress[ iPlayerID ][ iLoop ];
 		
-		format( strQuery, charsmax( strQuery ), "%s UPDATE Achieves SET Achieves.Progress = %d, Achieves.Acquired = %d WHERE Achieves.SteamID = '%s' AND Achieves.ID = %d;", strQuery, iProgress, ( g_bPlayerAchievementAcquired[ iLoop ] ) 1 : 0, strPlayerAuthID, iLoop );
+		format( strQuery, charsmax( strQuery ), "%s UPDATE Achieves SET Achieves.Progress = %d, Achieves.Acquired = %d WHERE Achieves.SteamID = '%s' AND Achieves.ID = %d;", strQuery, iProgress, ( g_bPlayerAchievementAcquired[ iLoop ] ) ? 1 : 0, strPlayerAuthID, iLoop );
 	}
 	
 	SQL_ThreadQuery( g_sqlTuple, "MySQL_Answer_SavePlayerStats", strQuery, strPlayerID, sizeof( strPlayerID ) );
 }
 
 public MySQL_Answer_SavePlayerStats( iFailState, Handle:hQuery, strErrorMessage[ ], iErrorCode, strData[ ], iDataSize ) {
-	new iPlayerID = strData[ 0 ];
-	
 	if( iFailState == TQUERY_CONNECT_FAILED ) {
 		log_amx( "Could not connect to the MySQL Database." );
 		log_amx( "[%d] %s", iErrorCode, strErrorMessage );
@@ -565,7 +563,7 @@ public Handle_PlayerLogInMenu( iPlayerID, iMenu, iKey ) {
 		}
 		
 		case 1: {
-			client_print( iPlayerID, print_chat, "[ UA ] You have chosen to login later. You can type /login to login later on." );
+			client_print( iPlayerID, print_chat, "[ Achievements ] You have chosen to login later. You can type /login to login later on." );
 		}
 	}
 }
@@ -595,7 +593,7 @@ public Handle_PlayerRegistrationMenu( iPlayerID, iMenu, iKey ) {
 	switch( iKey ) {
 		case 0: {
 			if( equal( g_strPlayerFirstName[ iPlayerID ], "" ) || equal( g_strPlayerLastName[ iPlayerID ], "" ) ) {
-				client_print( iPlayerID, print_chat, "[ UA ] Please input your First Name and Last Name before entering your password." );
+				client_print( iPlayerID, print_chat, "[ Achievements ] Please input your First Name and Last Name before entering your password." );
 				
 				ShowPlayerRegistrationMenu( iPlayerID );
 			} else {
@@ -612,7 +610,7 @@ public Handle_PlayerRegistrationMenu( iPlayerID, iMenu, iKey ) {
 		}
 		
 		case 3: {
-			client_print( iPlayerID, print_chat, "[ UA ] You have chosen to register later. You can type /register to register later on." );
+			client_print( iPlayerID, print_chat, "[ Achievements ] You have chosen to register later. You can type /register to register later on." );
 		}
 	}
 }
@@ -679,11 +677,11 @@ CheckPasswordValidity( iPlayerID, strPlayerHashedPassword[ ] ) {
 	if( equal( strHashedPassword, strPlayerHashedPassword ) ) {
 		SetBit( g_bitIsLoggedIn, iPlayerID );
 		
-		client_print( iPlayerID, print_chat, "[ UA ] You have been logged in. Your progress will now be saved automatically." );
+		client_print( iPlayerID, print_chat, "[ Achievements ] You have been logged in. Your progress will now be saved automatically." );
 		
 		MySQL_GetPlayerStats( iPlayerID );
 	} else {
-		client_print( iPlayerID, print_chat, "[ UA ] The password you inputted is incorrect. Please try again." );
+		client_print( iPlayerID, print_chat, "[ Achievements ] The password you inputted is incorrect. Please try again." );
 	}
 	
 	ClearPlayerData( iPlayerID );
