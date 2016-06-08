@@ -1,0 +1,260 @@
+/*
+	This file is a series of MySQL code to create and insert dummy values
+	into the tables for testing purposes.
+*/
+
+/*
+	Player:
+	-------
+	
+	@ SteamID is a string of at most 18 characters. It's format goes along the following: 
+		- STEAM_0:0:12345678
+		- STEAM_0:1:87654321
+	@ FirstName is a normal string where the player inputs his first name.
+	@ LastName is a normal string where the player inputs his last name.
+	@ Password is a string of the hashed password of the player (it is not stored as plain text).
+	@ Salt is a random string of 16 characters to be used in the hashing of the password.
+	
+	@ All unhashed passwords are the combination of the FirstName and the LastName.
+	@ All random data and numbers provided by http://www.random.org/
+*/
+INSERT INTO Player ( SteamID, FirstName, LastName, Password, Salt )
+VALUES ( 'STEAM_0:0:46481449',	'Val', 		'Eaker', 	'970fa22e497b0c9e8997b61172670d30', 	'tLh1hXW4axaLUWAL' );
+INSERT INTO Player ( SteamID, FirstName, LastName, Password, Salt )
+VALUES ( 'STEAM_0:0:55694211',	'Rutha', 	'Baros', 	'c8542c9ca6e3380cee3430bed7660cdf', 	'9hDW4PKpA22VUDkV' );
+INSERT INTO Player ( SteamID, FirstName, LastName, Password, Salt )
+VALUES ( 'STEAM_0:0:52378851',	'Tobie', 	'Feldstein', 	'fd47ea89961ac6de58e2c02061b484d5', 	'TxntphXLV9lJq4pD' );
+INSERT INTO Player ( SteamID, FirstName, LastName, Password, Salt )
+VALUES ( 'STEAM_0:0:39475719',	'Alfredo', 	'Mcgregor', 	'c7ecfd5b714102f1164dd7bcdd540485', 	'puammp7QkgIcRqbr' );
+INSERT INTO Player ( SteamID, FirstName, LastName, Password, Salt )
+VALUES ( 'STEAM_0:0:58647550',	'Errol', 	'Orr', 		'7178d3a53d858f1f8556010de45a2b6e', 	'uYiSUhjmyHs5lvgz' );
+INSERT INTO Player ( SteamID, FirstName, LastName, Password, Salt )
+VALUES ( 'STEAM_0:0:20747893',	'Young', 	'Camarillo', 	'294295035204ba3142ecc02821a16eb2', 	'tfExWiEOr6TNm6kE' );
+INSERT INTO Player ( SteamID, FirstName, LastName, Password, Salt )
+VALUES ( 'STEAM_0:0:81474382',	'Jacquelyn',	'Licon', 	'a90f4875d473d7b14b0df12e2d005461', 	'5Bk22upIn7qxFgPQ' );
+INSERT INTO Player ( SteamID, FirstName, LastName, Password, Salt )
+VALUES ( 'STEAM_0:0:23822824',	'Oswaldo', 	'Cantwell', 	'7fcb8e94d2d9882135defd7d3dc227f2', 	'LZViox1aPxl3WHkW' );
+INSERT INTO Player ( SteamID, FirstName, LastName, Password, Salt )
+VALUES ( 'STEAM_0:0:42019322',	'Maurita', 	'Steib', 	'7c094bb625dd248bc95ccb4222c25080', 	'DJ7jBbKISW4dxkMM' );
+INSERT INTO Player ( SteamID, FirstName, LastName, Password, Salt )
+VALUES ( 'STEAM_0:0:91646884',	'Takako', 	'Lueras', 	'eb966413bec342419ce49fcd1a0daa96', 	'1PttroAM0X2R2huB' );
+
+/*
+	Achievement:
+	------------
+	
+	@ ID is an integer that indentifies the achievement
+	@ Name is a string that gives a name to the achievement
+	@ Description is a string that explains a little bit about the achievement
+	@ Goal is the goal that the player has to reach to get the achievement
+	
+	@ For the sake of not having several repetitive achievements, a single achievement
+	will be present for each kind. For example there won't be two kill achievements,
+	the first requires 25 kills and the second requires 50 kills. Only a single achievement
+	will be implemented.
+*/
+INSERT INTO Achievement ( Name, Description, Goal )
+VALUES ( 
+	'Awardist',
+	'Earn 10 achievements',
+	10
+);
+INSERT INTO Achievement ( Name, Description, Goal )
+VALUES ( 
+	'Pro-Moted',
+	'Win 200 rounds',
+	200
+);
+INSERT INTO Achievement ( Name, Description, Goal )
+VALUES ( 
+	'Bomb Expert',
+	'Plant the bomb 50 times',
+	50
+);
+INSERT INTO Achievement ( Name, Description, Goal )
+VALUES ( 
+	'Defusal Expert',
+	'Defuse the bomb 50 times',
+	50
+);
+INSERT INTO Achievement ( Name, Description, Goal )
+VALUES ( 
+	'Clutch Master',
+	'Clutch the round 25 times',
+	25
+);
+INSERT INTO Achievement ( Name, Description, Goal )
+VALUES ( 
+	'War Bonds',
+	'Earn $50,000 total cash',
+	50000
+);
+INSERT INTO Achievement ( Name, Description, Goal )
+VALUES ( 
+	'Spending Spree',
+	'Spend $50,000 total cash',
+	50000
+);
+INSERT INTO Achievement ( Name, Description, Goal )
+VALUES ( 
+	'Ace Master',
+	'Ace the round 10 times',
+	10
+);
+INSERT INTO Achievement ( Name, Description, Goal )
+VALUES ( 
+	'Body Bagger',
+	'Kill 25 enemies',
+	25
+);
+INSERT INTO Achievement ( Name, Description, Goal )
+VALUES ( 
+	'Battle Sight Zero',
+	'Kill 25 enemies with headshots',
+	25
+);
+INSERT INTO Achievement ( Name, Description, Goal )
+VALUES ( 
+	'Points In Your Favor',
+	'Deal 1,000 damage total',
+	1000
+);
+INSERT INTO Achievement ( Name, Description, Goal )
+VALUES ( 
+	'Make The Cut',
+	'Knife an enemy',
+	1
+);
+INSERT INTO Achievement ( Name, Description, Goal )
+VALUES ( 
+	'Someone Set Us Up With The Bomb',
+	'Win the round by planting the bomb',
+	1
+);
+INSERT INTO Achievement ( Name, Description, Goal )
+VALUES ( 
+	'Rite of First Defusal',
+	'Win the round by defusing the bomb',
+	1
+);
+INSERT INTO Achievement ( Name, Description, Goal )
+VALUES ( 
+	'Give Piece a Chance',
+	'Win 5 pistol rounds',
+	5
+);
+
+/*
+	Achieves:
+	---------
+	
+	@ SteamID is the foreign key from Player
+	@ ID is the foreign key from Achievement
+	@ Progress is an integer number stating the progress of each Player with each Achievement
+	@ Acquired is a boolean variable that stores whether the player achieved each Achievement
+	
+	@ Since this is a sample databse, not all players will be included in the dummy data.
+*/
+/*
+	The following are achievements for Val Eaker. For the sake of testing, we will assume that
+	Val Eaker has earned all achievements.
+*/
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES( 'STEAM_0:0:46481449', 	1, 	10, 	true );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES( 'STEAM_0:0:46481449', 	2, 	200, 	true );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES( 'STEAM_0:0:46481449', 	3, 	50, 	true );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES( 'STEAM_0:0:46481449', 	4, 	50, 	true );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES( 'STEAM_0:0:46481449', 	5, 	25, 	true );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES( 'STEAM_0:0:46481449', 	6, 	50000, 	true );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES( 'STEAM_0:0:46481449', 	7, 	50000, 	true );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES( 'STEAM_0:0:46481449', 	8, 	10, 	true );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES( 'STEAM_0:0:46481449', 	9, 	25, 	true );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES( 'STEAM_0:0:46481449', 	10, 	25, 	true );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES( 'STEAM_0:0:46481449', 	11, 	1000, 	true );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES( 'STEAM_0:0:46481449', 	12, 	1, 	true );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES( 'STEAM_0:0:46481449', 	13, 	1, 	true );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES( 'STEAM_0:0:46481449', 	14, 	1, 	true );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES( 'STEAM_0:0:46481449', 	15, 	5, 	true );
+
+/*
+	The following are achievements for Rutha Baros. For the sake of testing, we will assume that Rutha Baros has not earned a single achievement yet with no progress at all.
+*/
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:55694211', 	1, 	0, 	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:55694211', 	2, 	0, 	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:55694211', 	3, 	0, 	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:55694211', 	4, 	0, 	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:55694211', 	5, 	0, 	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:55694211', 	6, 	0, 	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:55694211', 	7, 	0, 	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:55694211', 	8, 	0, 	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:55694211', 	9, 	0, 	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:55694211', 	10, 	0, 	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:55694211', 	11, 	0, 	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:55694211', 	12, 	0, 	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:55694211', 	13, 	0, 	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:55694211', 	14, 	0, 	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:55694211', 	15, 	0, 	false );
+
+/*
+	The following are achievements for Tobie Feldstein. For the sake of testing, we will assume that Tobie Feldstein has earned some achievements and has some progress in the
+	other non-acquired achievements.
+*/
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:52378851',	1,	5,	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:52378851',	2,	112,	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:52378851',	3,	50,	true );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:52378851',	4,	27,	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:52378851',	5,	5,	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:52378851',	6,	25987,	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:52378851',	7,	23654,	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:52378851',	8,	0,	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:52378851',	9,	25,	true );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:52378851',	10,	22,	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:52378851',	11,	1000,	true );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:52378851',	12,	0,	false );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:52378851',	13,	1,	true );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:52378851',	14,	1,	true );
+INSERT INTO Achieves ( SteamID, ID, Progress, Acquired )
+VALUES ( 'STEAM_0:0:52378851',	15,	4,	false );

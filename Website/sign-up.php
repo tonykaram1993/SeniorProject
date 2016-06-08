@@ -12,17 +12,17 @@
 <nav class="navbar navbar-inverse">
 	<div class="container-fluid">
 		<div class="navbar-header">
-			<a class="navbar-brand" href="/index.php">Achievements</a>
+			<a class="navbar-brand" href="index.php">Achievements</a>
 		</div>
 		<ul class="nav navbar-nav">
-			<li><a href="/index.php">Home</a></li>
-			<li><a href="/profile.php">Profile</a></li>
-			<li><a href="/admin.php">Admin</a></li>
-			<li><a href="/contact/php">Contact Us</a></li>
+			<li><a href="index.php">Home</a></li>
+			<li><a href="profile.php">Profile</a></li>
+			<li><a href="admin.php">Admin</a></li>
+			<li><a href="contact.php">Contact Us</a></li>
 		</ul>
 		<ul class="nav navbar-nav navbar-right">
-			<li class="active"><a href="/sign-up.php"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-			<li><a href="/login.php"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+			<li class="active"><a href="sign-up.php"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+			<li><a href="login.php"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
 		</ul>
 	</div>
 </nav>
@@ -36,13 +36,14 @@
 	<div class="alert alert-info">
 	    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 		<strong>How to sign up?</strong>
-		<br>In order to sign up, please follow these steps:
+		<br><br>
 		<ol>
-			<li>Connect to one of the servers</li>
-			<li>Wait for an automated menu popup asking you if you would like to set a password</li>
-			<li>Set a password</li>
-			<li>Come back here on this website</li>
-			<li>Login in using your Steam ID and Password</li>
+			<li>Connect to one of the servers.</li>
+			<li>Type in chat /register, a menu will pop up.</li>
+			<li>Enter your First Name and Last Name.</li>
+			<li>Enter your desired password.</li>
+			<li>Come back here to this website.</li>
+			<li>Login in using your Steam ID and Password.</li>
 		</ol>
 	</div>
 </div>

@@ -18,11 +18,11 @@
 			<li><a href="index.php">Home</a></li>
 			<li><a href="profile.php">Profile</a></li>
 			<li><a href="admin.php">Admin</a></li>
-			<li><a href="contact.php">Contact Us</a></li>
+			<li class="active"><a href="contact.php">Contact Us</a></li>
 		</ul>
 		<ul class="nav navbar-nav navbar-right">
 			<li><a href="sign-up.php"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-			<li class="active"><a href="login.php"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+			<li><a href="login.php"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
 		</ul>
 	</div>
 </nav>
@@ -30,36 +30,29 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-6 col-md-4 col-md-offset-4">
-	     <h1 class="text-center login-title">Sign in</h1>
+	     <h1 class="text-center login-title">Contact Us</h1>
             <div class="account-wall">
-                <form class="form-signin">
+                <form class="form-contact">
 		<br>
-                <input type="text" class="form-control" placeholder="Steam ID" required autofocus>
+                <input type="text" class="form-control" placeholder="Full Name" id="name" required autofocus>
                 <br>
-		<input type="password" class="form-control" placeholder="Password" required>
+		<input type="email" class="form-control" placeholder="Email" id="email" required>
 		<br>
-                <button class="btn btn-lg btn-primary btn-block" type="submit">
+		<textarea rows="10" class="form-control" placeholder="Your comments" id="comments" required></textarea>
+                <br>
+		<button class="btn btn-lg btn-primary btn-block" type="submit">
                     Sign in</button>
 		<script>
 		$(document).ready(function(){
 		    $('[data-toggle="popover"]').popover(); 
 		});
 		</script>
-		<a href="#" class="need-help" title="Where can you find your Steam ID?" data-toggle="popover" data-content="You can find your Steam ID when you connect to any server. Once on a server, type 'status' in console and find your Steam ID next to your name.">Need Help?</a><br>
-                </form>
             </div>
-            <a href="sign-up.php" class="text-center new-account">Sign Up </a>
 	    <br><br>
 	    <div class="alert alert-info">
 	    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-		<strong>Why login?</strong>
-		<br><br>By logging in you will be able to:
-		<ul>
-			<li>View your profile</li>
-			<li>View your achievements</li>
-			<li>Explore new possible achievements</li>
-		</ul>
-		And so much more!
+		<strong>What happens next?</strong>
+		<br><br>We will take a loot at your comments and get back to you as soon as possible. We will be in contact with you using the email that you provided above.
 	    </div>
         </div>
     </div>
