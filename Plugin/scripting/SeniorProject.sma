@@ -40,6 +40,7 @@
 #include < sqlx >
 #include < string >
 #include < hamsandwich >
+#include < fakemeta >
 
 #pragma semicolon 1
 
@@ -47,6 +48,8 @@
 #define SetBit(%1,%2)      		(%1 |= (1<<(%2&31)))
 #define ClearBit(%1,%2)    		(%1 &= ~(1 <<(%2&31)))
 #define CheckBit(%1,%2)    		(%1 & (1<<(%2&31)))
+
+#define m_LastHitGroup			75
 
 /*
 	Below is the section where normal people can safely edit
@@ -71,11 +74,30 @@
 	SAFETY ZONE ENDS HERE
 */
 
+/*
+	Achievements:
+	Awardist 		- Earn 10 Achievements			DONE
+	Pro-Moted 		- Win 200 rounds			DONE
+	Bomb Expert		- Plant the bomb 50 times		DONE
+	Defusal Expert		- Defuse the bomb 50 times		DONE
+	Clutch Master		- Clutch the round 25 times		DONE
+	War Bonds		- Earn $50,000 total cash		
+	Spending Spree		- Spend $50,000 total cash		
+	Ace Master		- Ace the round 10 times		
+	Body Bagger		- Kill 25 enemies			DONE
+	Battle Sight Zero	- Kill 25 enemies with headshots	DONE
+	Points In Your Favor	- Deal 1,000 damage total		DONE
+	Make the Cut		- Knife an enemy			DONE
+	Someone Set Bomb	- Win the round by planting the bomb	DONE
+	Rite of First Defusal	- Win the round by defusing the bomb	DONE
+	Give Piece a Chance	- Win 5 pistol rounds			
+*/
+
 /* Enumerations */
 enum _:ACHIEVEMENT_MAX( ) {
 	ACHIEVEMENT_AWARDIST		= 1,	ACHIEVEMENT_PROMOTED,
 	ACHIEVEMENT_BOMB_EXPERT,		ACHIEVEMENT_DEFUSAL_EXPERT,
-	ACHIEVEMENT_CLUTCH_MASTER,		ACHIEVEMENT_WAR_BONDS,			ACHIEVEMENT_SPENDING_SPREE,		ACHIEVEMENT_ACE_MASTER,			ACHIEVEMENT_BODY_BAGUER,		ACHIEVEMENT_BATTLE_SIGHT_ZERO,		ACHIEVEMENT_POINTS_IN_YOUR_FAVOR,	ACHIEVEMENT_MAKE_THE_CUT,		ACHIEVEMENT_SOMEONE_SET_US_BOMB,	ACHIEVEMENT_RITE_OF_FIRST_DEFUSAL,	ACHIEVEMENT_GIVE_PIECE_A_CHANCE
+	ACHIEVEMENT_CLUTCH_MASTER,		ACHIEVEMENT_WAR_BONDS,			ACHIEVEMENT_SPENDING_SPREE,		ACHIEVEMENT_ACE_MASTER,			ACHIEVEMENT_BODY_BAGGER,		ACHIEVEMENT_BATTLE_SIGHT_ZERO,		ACHIEVEMENT_POINTS_IN_YOUR_FAVOR,	ACHIEVEMENT_MAKE_THE_CUT,		ACHIEVEMENT_SOMEONE_SET_US_BOMB,	ACHIEVEMENT_RITE_OF_FIRST_DEFUSAL,	ACHIEVEMENT_GIVE_PIECE_A_CHANCE
 };
 
 enum _:ACHIEVEMENT_COLUMN_MAX( ) {
@@ -106,7 +128,7 @@ new const g_strPluginVersion[ ]		= "0.0.1b";
 new const g_strPluginAuthor[ ]		= "tonykaram1993";
 
 new const g_strSQLHost[ ]		= "127.0.0.1";
-new const g_strSQLUsername[ ]		= "admin";
+new const g_strSQLUsername[ ]		= "plugin";
 new const g_strSQLPassword[ ]		= "password";
 new const g_strSQLDatabase[ ]		= "ultimateachievements";
 
@@ -117,9 +139,10 @@ new g_strPlayerLastName[ MAX_PLAYERS ][ 64 ];
 new g_strPlayerSalt[ MAX_PLAYERS ][ 16 ];
 
 new g_iPlayerAchievementProgress[ MAX_PLAYERS ][ ACHIEVEMENT_MAX ];
-new g_iAchievementGoal[ ACHIEVEMENT_MAX ];
-
 new bool:g_bPlayerAchievementAcquired[ MAX_PLAYERS ][ ACHIEVEMENT_MAX ];
+
+new g_iAchievementGoal[ ACHIEVEMENT_MAX ];
+new g_strAchievementName[ ACHIEVEMENT_MAX ][ 256 ];
 
 /* Strings */
 new g_strErrorMessage[ 512 ];
@@ -149,8 +172,13 @@ public plugin_init( ) {
 	register_clcmd( "say_team /logout", "ClCmd_LogoutMenu" );
 	
 	RegisterHam( Ham_Spawn, "player", "Ham_Spawn_Player_Post", true );
+	RegisterHam( Ham_Killed, "player", "Ham_Killed_Player_Pre", false );
+	RegisterHam( Ham_TakeDamage, "player", "Ham_TakeDamage_Player_Pre", false );
 	
-	set_task( 0.1, "MySQL_InitializeConnection" );
+	register_event( "SendAudio", "Event_SendAudio_TerroristWin",		"a",	"2&%!MRAD_terwin" );
+	register_event( "SendAudio", "Event_SendAudio_CounterTerroristWin",	"a",	"2&%!MRAD_ctwin" );
+	
+	MySQL_InitializeConnection( );
 }
 
 public plugin_end( ) {
@@ -172,7 +200,32 @@ public client_authorized( iPlayerID ) {
 }
 
 public client_disconnected( iPlayerID ) {
-	MySQL_SavePlayerStats( iPlayerID );
+	if( CheckBit( g_bitIsLoggedIn, iPlayerID ) ) {
+		MySQL_SavePlayerStats( iPlayerID );
+	}
+}
+
+/* Bomb Natives */
+public bomb_explode( iPlanterID, iDefuserID ) {
+	IncreasePlayerProgress( iPlanterID, ACHIEVEMENT_BOMB_EXPERT );
+	
+	new iPlayers[ 32 ], iNum;
+	get_players( iPlayers, iNum, "ae", "TERRORIST" );
+	
+	for( new iLoop = 0; iLoop < iNum; iLoop++ ) {
+		IncreasePlayerProgress( iPlayers[ iLoop ], ACHIEVEMENT_SOMEONE_SET_US_BOMB );
+	}
+}
+
+public bomb_defused( iDefuserID ) {
+	IncreasePlayerProgress( iDefuserID, ACHIEVEMENT_DEFUSAL_EXPERT );
+	
+	new iPlayers[ 32 ], iNum;
+	get_players( iPlayers, iNum, "ae", "CT" );
+	
+	for( new iLoop = 0; iLoop < iNum; iLoop++ ) {
+		IncreasePlayerProgress( iPlayers[ iLoop ], ACHIEVEMENT_RITE_OF_FIRST_DEFUSAL );
+	}
 }
 
 /* ClCmds */
@@ -254,7 +307,9 @@ public Ham_Spawn_Player_Post( iPlayerID ) {
 	}
 	
 	if( CheckBit( g_bitIsRegistered, iPlayerID ) ) {
-		client_print( iPlayerID, print_chat, "[ Achievements ] Please type /login to login." );
+		if( !CheckBit( g_bitIsLoggedIn, iPlayerID ) ) {
+			client_print( iPlayerID, print_chat, "[ Achievements ] Please type /login to login." );
+		}
 	} else {
 		client_print( iPlayerID, print_chat, "[ Achievements ] Please type /register to register." );
 	}
@@ -262,27 +317,76 @@ public Ham_Spawn_Player_Post( iPlayerID ) {
 	return HAM_IGNORED;
 }
 
+public Ham_Killed_Player_Pre( iVictimID, iKillerID, iShouldGIB ) {
+	new iWeaponID = get_user_weapon( iKillerID );
+	static strWeaponName[ 32 ];
+	get_weaponname( iWeaponID, strWeaponName, charsmax( strWeaponName ) );
+	
+	if( equal( strWeaponName, "weapon_knife" ) ) {
+		IncreasePlayerProgress( iKillerID, ACHIEVEMENT_MAKE_THE_CUT );
+	}
+	
+	if( get_pdata_int( iVictimID, m_LastHitGroup, 5 ) == HIT_HEAD ) {
+		IncreasePlayerProgress( iKillerID, ACHIEVEMENT_BATTLE_SIGHT_ZERO );
+	}
+	
+	IncreasePlayerProgress( iKillerID, ACHIEVEMENT_BODY_BAGGER );
+}
+
+public Ham_TakeDamage_Player_Pre( iVictimID, iInflictorID, iAttackerID, Float:fDamage, iDamageBits ) {
+	if( is_user_connected( iAttackerID ) ) {
+		IncreasePlayerProgress( iAttackerID, ACHIEVEMENT_POINTS_IN_YOUR_FAVOR, floatround( fDamage ) );
+	}
+}
+
+/* Events */
+public Event_SendAudio_TerroristWin( ) {
+	new iPlayers[ 32 ], iNum, iTempID;
+	get_players( iPlayers, iNum, "ae", "TERRORIST" );
+	
+	if( iNum == 1 ) {
+		IncreasePlayerProgress( iPlayers[ 0 ], ACHIEVEMENT_CLUTCH_MASTER );
+	}
+	
+	for( new iLoop = 0; iLoop < iNum; iLoop++ ) {
+		iTempID = iPlayers[ iLoop ];
+		
+		IncreasePlayerProgress( iTempID, ACHIEVEMENT_PROMOTED );
+	}
+}
+
+public Event_SendAudio_CounterTerroristWin( ) {
+	new iPlayers[ 32 ], iNum, iTempID;
+	get_players( iPlayers, iNum, "ae", "CT" );
+	
+	if( iNum == 1 ) {
+		IncreasePlayerProgress( iPlayers[ 0 ], ACHIEVEMENT_CLUTCH_MASTER );
+	}
+	
+	for( new iLoop = 0; iLoop < iNum; iLoop++ ) {
+		iTempID = iPlayers[ iLoop ];
+		
+		IncreasePlayerProgress( iTempID, ACHIEVEMENT_PROMOTED );
+	}
+}
+
 /* MySQL Functions */
 public MySQL_InitializeConnection( ) {
-	// Save info in tuple
 	g_sqlTuple = SQL_MakeDbTuple( g_strSQLHost, g_strSQLUsername, g_strSQLPassword, g_strSQLDatabase );
 	
-	// Connect and return approriate info
 	new iErrorCode;
 	new Handle:sqlConnection = SQL_Connect( g_sqlTuple, iErrorCode, g_strErrorMessage, charsmax( g_strErrorMessage ) );
 	
-	// Stop plugin with sql error message if connection was not successful
 	if( sqlConnection == Empty_Handle ) {
 		set_fail_state( g_strErrorMessage );
 	}
 	
-	// If all goes right, free handle to be used later on
 	SQL_FreeHandle( sqlConnection );
 	
-	MySQL_GetAchievementGoals( );
+	MySQL_GetAchievementInfo( );
 }
 
-MySQL_GetAchievementGoals( ) {
+MySQL_GetAchievementInfo( ) {
 	new strQuery[ 512 ];
 	formatex( strQuery, charsmax( strQuery ), "SELECT * FROM Achievement;" );
 	
@@ -301,12 +405,23 @@ public MySQL_Answer_GetAchievementGoals( iFailState, Handle:hQuery, strErrorMess
 			set_fail_state( "It appears that there are no Achievements in the Database. Stopping plugin." );
 		} else {
 			new iID, iGoal;
+			new strName[ 256 ];
+			
+			// log_amx( "Getting Achievement Goals" );
 			
 			for( new iLoop = 0; iLoop < SQL_NumResults( hQuery ); iLoop++ ) {
 				iID = SQL_ReadResult( hQuery, ACHIEVEMENT_COLUMN_ID );
 				iGoal = SQL_ReadResult( hQuery, ACHIEVEMENT_COLUMN_GOAL );
+				SQL_ReadResult( hQuery, ACHIEVEMENT_COLUMN_NAME, strName, charsmax( strName ) );
 				
 				g_iAchievementGoal[ iID ] = iGoal;
+				copy( g_strAchievementName[ iID ], 255, strName );
+				
+				// log_amx( "iID: %d", iID );
+				// log_amx( "iGoal: %d", iGoal );
+				// log_amx( "strName: %s", strName );
+				
+				SQL_NextRow( hQuery );
 			}
 		}
 	}
@@ -322,7 +437,7 @@ MySQL_PlayerConnected( iPlayerID ) {
 	get_user_authid( iPlayerID, strPlayerAuthID, charsmax( strPlayerAuthID ) );
 	
 	new strQuery[ 512 ];
-	formatex( strQuery, charsmax( strQuery ), "SELECT * FROM Player WHERE Player.SteamID = '%s'", strPlayerAuthID );
+	formatex( strQuery, charsmax( strQuery ), "SELECT * FROM Player WHERE Player.SteamID = '%s';", strPlayerAuthID );
 	
 	SQL_ThreadQuery( g_sqlTuple, "MySQL_Answer_PlayerConnected", strQuery, strPlayerID, sizeof( strPlayerID ) );
 }
@@ -457,11 +572,26 @@ public MySQL_Answer_GetPlayerStats( iFailState, Handle:hQuery, strErrorMessage[ 
 		} else {
 			new iID, iProgress;
 			
+			new strPlayerName[ 32 ];
+			get_user_name( iPlayerID, strPlayerName, charsmax( strPlayerName ) );
+			
+			// log_amx( "Getting Player Stats" );
+			// log_amx( "iPlayerID: %d", iPlayerID );
+			// log_amx( "strPlayerName: %s", strPlayerName );
+			
 			for( new iLoop = 0; iLoop < SQL_NumResults( hQuery ); iLoop++ ) {
 				iID = SQL_ReadResult( hQuery, ACHIEVES_COLUMN_ID );
 				iProgress = SQL_ReadResult( hQuery, ACHIEVES_COLUMN_PROGRESS );
 				
 				g_iPlayerAchievementProgress[ iPlayerID ][ iID ] = iProgress;
+				
+				g_bPlayerAchievementAcquired[ iPlayerID ][ iID ] = ( SQL_ReadResult( hQuery, ACHIEVES_COLUMN_ACQUIRED ) == 1 ) ? true : false;
+				
+				// log_amx( "iID: %d", iID );
+				// log_amx( "iProgress: %d", iProgress );
+				// log_amx( "bAcquired: %d", g_bPlayerAchievementAcquired[ iPlayerID ][ iID ] ? 1 : 0 );
+				
+				SQL_NextRow( hQuery );
 			}
 		}
 	}
@@ -479,7 +609,7 @@ MySQL_InsertPlayerAchieves( iPlayerID ) {
 	new strQuery[ 2048 ] = "";
 
 	for( new iLoop = 1; iLoop < ACHIEVEMENT_MAX; iLoop++ ) {
-		format( strQuery, charsmax( strQuery ), "%s INSERT INTO Achieves ( SteamID, ID, Progress, Acquired ) VALUES ( '%s', %d, 0, false );", strQuery, strPlayerAuthID, iLoop );
+		format( strQuery, charsmax( strQuery ), "%s INSERT INTO Achieves ( SteamID, ID, Progress, Acquired ) VALUES ( '%s', %d, 0, 0 );", strQuery, strPlayerAuthID, iLoop );
 	}
 	
 	SQL_ThreadQuery( g_sqlTuple, "MySQL_Answer_InsertPlayerStats", strQuery, strPlayerID, sizeof( strPlayerID ) );
@@ -499,6 +629,8 @@ public MySQL_Answer_InsertPlayerStats( iFailState, Handle:hQuery, strErrorMessag
 		
 		client_print( iPlayerID, print_chat, "[ Achievements ] There has been a problem inserting your stats. Please try again." );
 	} else {
+		MySQL_GetPlayerStats( iPlayerID );
+		
 		client_print( iPlayerID, print_chat, "[ Achievements ] Your stats has been inserted into our database. Start playing to increase your stats." );
 	}
 	
@@ -512,14 +644,24 @@ MySQL_SavePlayerStats( iPlayerID ) {
 	new strPlayerAuthID[ 36 ];
 	get_user_authid( iPlayerID, strPlayerAuthID, charsmax( strPlayerAuthID ) );
 	
-	new strQuery[ 4096 ] = "";
+	new strQuery[ 2048 ] = "";
 	new iProgress;
 	
+	new strPlayerName[ 32 ];
+	get_user_name( iPlayerID, strPlayerName, charsmax( strPlayerName ) );
+	
+	// log_amx( "Saving Player Stats" );
+	// log_amx( "iPlayerID: %d", iPlayerID );
+	// log_amx( "strPlayerName: %s", strPlayerName );
 	
 	for( new iLoop = 1; iLoop < ACHIEVEMENT_MAX; iLoop++ ) {
 		iProgress = g_iPlayerAchievementProgress[ iPlayerID ][ iLoop ];
 		
-		format( strQuery, charsmax( strQuery ), "%s UPDATE Achieves SET Achieves.Progress = %d, Achieves.Acquired = %d WHERE Achieves.SteamID = '%s' AND Achieves.ID = %d;", strQuery, iProgress, ( g_bPlayerAchievementAcquired[ iLoop ] ) ? 1 : 0, strPlayerAuthID, iLoop );
+		format( strQuery, charsmax( strQuery ), "%s UPDATE Achieves SET Achieves.Progress = %d, Achieves.Acquired = %d WHERE Achieves.SteamID = '%s' AND Achieves.ID = %d;", strQuery, iProgress, ( g_bPlayerAchievementAcquired[ iPlayerID ][ iLoop ] ) ? 1 : 0, strPlayerAuthID, iLoop );
+		
+		// log_amx( "iID: %d", iLoop );
+		// log_amx( "iProgress: %d", iProgress );
+		// log_amx( "bAcquired: %d", g_bPlayerAchievementAcquired[ iPlayerID ][ iLoop ] ? 1 : 0 );
 	}
 	
 	SQL_ThreadQuery( g_sqlTuple, "MySQL_Answer_SavePlayerStats", strQuery, strPlayerID, sizeof( strPlayerID ) );
@@ -661,6 +803,9 @@ GenerateRandomString( strSalt[ ], iSaltSize ) {
 			}
 		}
 	}
+	
+	// log_amx( "Random String Generation (Salt):" );
+	// log_amx( "Salt: %s", strSalt );
 }
 
 HashPassword( strHashedPassword[ ], iHashedPasswordSize, strPassword[ ], strSalt[ ] ) {
@@ -690,12 +835,73 @@ CheckPasswordValidity( iPlayerID, strPlayerHashedPassword[ ] ) {
 ClearPlayerData( iPlayerID ) {
 	g_strPlayerPassword[ iPlayerID ] = "^0";
 	g_strPlayerSalt[ iPlayerID ] = "^0";
+	
+	new strPlayerName[ 32 ];
+	get_user_name( iPlayerID, strPlayerName, charsmax( strPlayerName ) );
+	
+	// log_amx( "Player Data Cleared" );
+	// log_amx( "iPlayerID: %d", iPlayerID );
+	// log_amx( "strPlayerName: %s", strPlayerName );
+	// log_amx( "g_strPlayerPassword: %s", g_strPlayerPassword[ iPlayerID ] );
+	// log_amx( "g_strPlayerSalt: %s", g_strPlayerSalt[ iPlayerID ] );
 }
 
 ClearPlayerAchievementProgress( iPlayerID ) {
-	for( new iLoop = 0; iLoop < ACHIEVEMENT_MAX; iLoop++ ) {
+	new strPlayerName[ 32 ];
+	get_user_name( iPlayerID, strPlayerName, charsmax( strPlayerName ) );
+	
+	// log_amx( "Clearing Player Achievement Progress" );
+	// log_amx( "iPlayerID: %d", iPlayerID );
+	// log_amx( "strPlayerName: %s", strPlayerName );
+	
+	for( new iLoop = 1; iLoop < ACHIEVEMENT_MAX; iLoop++ ) {
 		g_iPlayerAchievementProgress[ iPlayerID ][ iLoop ] = 0;
 		g_bPlayerAchievementAcquired[ iPlayerID ][ iLoop ] = false;
+		
+		// log_amx( "iID: %d", iLoop );
+		// log_amx( "iProgress: %d", g_iPlayerAchievementProgress[ iPlayerID ][ iLoop ] );
+		// log_amx( "bAcquired: %d", g_bPlayerAchievementAcquired[ iPlayerID ][ iLoop ] ? 1 : 0 );
+	}
+}
+
+IncreasePlayerProgress( iPlayerID, iAchievementID, iProgress = 1 ) {
+	if( !CheckBit( g_bitIsLoggedIn, iPlayerID ) ) {
+		return;
+	}
+	
+	new strPlayerName[ 32 ];
+	get_user_name( iPlayerID, strPlayerName, charsmax( strPlayerName ) );
+	
+	// log_amx( "Increasing Player Progress" );
+	// log_amx( "iPlayerID: %d", iPlayerID );
+	// log_amx( "strPlayerName: %s", strPlayerName );
+	// log_amx( "iID: %d", iAchievementID );
+	// log_amx( "bAcquired: %d", g_bPlayerAchievementAcquired[ iPlayerID ][ iAchievementID ] ? 1 : 0 );
+	// log_amx( "iProgress: %d", iProgress );
+	
+	if( !g_bPlayerAchievementAcquired[ iPlayerID ][ iAchievementID ] ) {
+		g_iPlayerAchievementProgress[ iPlayerID ][ iAchievementID ] += iProgress;
+		CheckGoalReached( iPlayerID, iAchievementID );
+	}
+}
+
+CheckGoalReached( iPlayerID, iAchievementID ) {
+	new strPlayerName[ 32 ];
+	get_user_name( iPlayerID, strPlayerName, charsmax( strPlayerName ) );
+	
+	// log_amx( "Checking Goal Reached" );
+	// log_amx( "iPlayerID: %d", iPlayerID );
+	// log_amx( "strPlayerName: %s", strPlayerName );
+	
+	if( !g_bPlayerAchievementAcquired[ iPlayerID ][ iAchievementID ] ) {
+		if( g_iPlayerAchievementProgress[ iPlayerID ][ iAchievementID ] >= g_iAchievementGoal[ iAchievementID ] ) {
+			g_iPlayerAchievementProgress[ iPlayerID ][ iAchievementID ] = g_iAchievementGoal[ iAchievementID ];
+			g_bPlayerAchievementAcquired[ iPlayerID ][ iAchievementID ] = true;
+			
+			client_print( 0, print_chat, "[ Achievements ] %s has just acquired the %s achievement.", strPlayerName, g_strAchievementName[ iAchievementID ] );
+			
+			IncreasePlayerProgress( iPlayerID, ACHIEVEMENT_AWARDIST );
+		}
 	}
 }
 

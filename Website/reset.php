@@ -1,3 +1,7 @@
+<?php 
+	session_start( );
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +14,7 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 	<link href="css/sticky-footer.css" rel="stylesheet">
+	<link href="css/3-col-portfolio.css" rel="stylesheet">
 </head>
 <body>
 <div id="background-container" class="container">
@@ -21,8 +26,7 @@
 			<ul class="nav navbar-nav">
 				<li><a href="index.php">Home</a></li>
 				<li><a href="achievements.php">Achievements</a></li>
-				<li><a href="profile.php">Profile</a></li>
-				<li class="active"><a href="contact.php">Contact Us</a></li>
+				<li class="active"><a href="profile.php">Profile</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
 				<li><a href="sign-up.php"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
@@ -31,43 +35,40 @@
 			</ul>
 		</div>
 	</nav>
-
+	
 	<div class="container">
 	    <div class="row">
 		<div class="col-sm-6 col-md-4 col-md-offset-4">
-			<h1 class="text-center login-title">Contact Us</h1>
-			<div class="account-wall">
-				<form class="form-contact">
-					<br>
+		    <?php 
+			if( isset( $_SESSION[ "steamid" ] ) ) {
+				$strServerIP = "127.0.0.1";
+				$strUsername = "website";
+				$strPassword = "password";
+				
+				$sqlConnection = mysqli_connect( $strServerIP, $strUsername, $strPassword );
+				
+				if( !$sqlConnection ) {
+					$strErrorMessage = mysqli_error( );
 					
-					<input type="text" class="form-control" placeholder="Full Name" id="name" required autofocus>
+					echo '<div class="alert alert-danger">';
+					echo '<strong>Ooops!</strong> <br>It appears that a connection to the database was not successful. Please try again.<br><br>';
+					echo 'Error: ' . $strErrorMessage;
+					echo '</div>';
+				} else {
+					$sqlQuery = sprintf( "DELETE FROM Achieves WHERE Achieves.SteamID = '%s';", $_SESSION[ "steamid" ] );
+					mysqli_select_db( $sqlConnection, 'ultimateachievements' );
+					$sqlResult = mysqli_query( $sqlConnection, $sqlQuery );
 					
-					<br>
-					
-					<input type="email" class="form-control" placeholder="Email" id="email" required>
-					
-					<br>
-					
-					<textarea rows="10" class="form-control" placeholder="Your comments" id="comments" required></textarea>
-					
-					<br>
-					
-					<button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
-					<script>
-						$(document).ready(function(){
-							$('[data-toggle="popover"]').popover(); 
-						});
-					</script>
-				</form>
-			</div>
-			
-			<br><br>
-			
-			<div class="alert alert-info">
-				<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-				<strong>What happens next?</strong>
-				<br><br>We will take a loot at your comments and get back to you as soon as possible. We will be in contact with you using the email that you provided above.
-			</div>
+					echo '<div class="alert alert-success">';
+					echo '<strong>Success!</strong> <br>All your achievement progress has been deleted.';
+					echo '</div>';
+				}
+			} else {
+				echo '<div class="alert alert-danger">';
+				echo '<strong>Ooops!</strong> <br>It appears that you are not logged in. Please login first.';
+				echo '</div>';
+			}
+		    ?>
 		</div>
 	    </div>
 	</div>

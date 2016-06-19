@@ -56,91 +56,91 @@ VALUES ( 'STEAM_0:0:91646884',	'Takako', 	'Lueras', 	'eb966413bec342419ce49fcd1a
 INSERT INTO Achievement ( Name, Description, Goal )
 VALUES ( 
 	'Awardist',
-	'Earn 10 achievements',
+	"Earn 10 or more Achievements from the list to earn this Achievement. This will show us that are you really trying to achieve them all.",
 	10
 );
 INSERT INTO Achievement ( Name, Description, Goal )
 VALUES ( 
 	'Pro-Moted',
-	'Win 200 rounds',
+	"Win a total of 200 rounds. All rounds won count whether it's by team elimination or bomb planting/defusal. Just win it and we will count it.",
 	200
 );
 INSERT INTO Achievement ( Name, Description, Goal )
 VALUES ( 
 	'Bomb Expert',
-	'Plant the bomb 50 times',
+	"Plant the bomb on the Terrorist side and win the round when the bomb explodes 50 times. That's a big number, can you manage?",
 	50
 );
 INSERT INTO Achievement ( Name, Description, Goal )
 VALUES ( 
 	'Defusal Expert',
-	'Defuse the bomb 50 times',
+	"Be the hero that everyone wants. Go out there and defuse the bomb to win the round 50 times. Show those Terrorists who's boss.",
 	50
 );
 INSERT INTO Achievement ( Name, Description, Goal )
 VALUES ( 
 	'Clutch Master',
-	'Clutch the round 25 times',
+	"Do you have the skills to kill all the remaining enemies by yourself? I think you can't, go ahead do it 25 times and prove me wrong.",
 	25
 );
 INSERT INTO Achievement ( Name, Description, Goal )
 VALUES ( 
 	'War Bonds',
-	'Earn $50,000 total cash',
+	"You can never go wrong with earning money. Rack up $50,000 like a boss. You think you can do it?",
 	50000
 );
 INSERT INTO Achievement ( Name, Description, Goal )
 VALUES ( 
 	'Spending Spree',
-	'Spend $50,000 total cash',
+	"Oh I see you saved all that money. How about we start spending it don't you think? Money that is not spent is a waste. Go crazy!",
 	50000
 );
 INSERT INTO Achievement ( Name, Description, Goal )
 VALUES ( 
 	'Ace Master',
-	'Ace the round 10 times',
+	"Reserve your place on the elite list by killing all enemies single handddly. I know that's easy, that's why we want you to do it 5 times.",
 	10
 );
 INSERT INTO Achievement ( Name, Description, Goal )
 VALUES ( 
 	'Body Bagger',
-	'Kill 25 enemies',
+	"Warm your muscles a bit and get me 25 body bags. Let's go on the double.",
 	25
 );
 INSERT INTO Achievement ( Name, Description, Goal )
 VALUES ( 
 	'Battle Sight Zero',
-	'Kill 25 enemies with headshots',
+	"Killing 25 players was easy eh? This time I want you to get 25 heads. Yes you heard me correctly, 25 heads ASAP!",
 	25
 );
 INSERT INTO Achievement ( Name, Description, Goal )
 VALUES ( 
 	'Points In Your Favor',
-	'Deal 1,000 damage total',
+	"You think you are the damage master around here? Prove it and deal 1,000 damage in total to your enemies. They will fear you after that, trust me.",
 	1000
 );
 INSERT INTO Achievement ( Name, Description, Goal )
 VALUES ( 
 	'Make The Cut',
-	'Knife an enemy',
+	"Anyone can kill another player with a weapon. Do you think you can mange to kill one with a knife? Let's see.",
 	1
 );
 INSERT INTO Achievement ( Name, Description, Goal )
 VALUES ( 
 	'Someone Set Us Up With The Bomb',
-	'Win the round by planting the bomb',
+	"It is as easy as it sounds. Plant the bomb, let it explode and you win. It doesn't say who has to plant the bomb though. It could be you or your teammates.",
 	1
 );
 INSERT INTO Achievement ( Name, Description, Goal )
 VALUES ( 
 	'Rite of First Defusal',
-	'Win the round by defusing the bomb',
+	"It is as easy as it sounds. Defuse the bomb, stop it from exploding and you win. It doesn't say who has to defuse the bomb though. It could be you or your teammates.",
 	1
 );
 INSERT INTO Achievement ( Name, Description, Goal )
 VALUES ( 
 	'Give Piece a Chance',
-	'Win 5 pistol rounds',
+	"Pistol rounds are the money boosters. Win the pistol rounds and you get the economic edge. Do it 5 times and this Achievement is yours.",
 	5
 );
 
